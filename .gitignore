@@ -1,32 +1,375 @@
-# Prerequisites
-*.d
+// OOP Lab Project.cpp : This file contains the 'main' function. Program execution begins and ends there.
+//
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+class Manage
+{public:
 
-# Precompiled Headers
-*.gch
-*.pch
+	virtual void Adding_items(fstream& Products, int number, string& input){}
+	virtual int Deleting_items(fstream& Products, fstream& temp, string& input) { return 0; }
+	virtual void Edit_items(fstream& Products, fstream& temp, string& input){}
+	virtual int Total_Bill(fstream& Products, fstream& Bill, string& input) { return 0; }
+	virtual void Display(fstream& Products, string& input){}
+	virtual void reciept(fstream& Bill, string& input){}
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+	~Manage()
+	{
+	}
+};
+class add : public Manage {
+public:
+	void Adding_items(fstream& Products, int number, string& input)
+	{
+		int price;
+		for (int i = 0; i < number; i++)
+		{
+			cin.ignore();
+			cout << "Enter the name of the product : ";
+			getline(cin, input);
+			Products << input << "\n";
+			cout << "Enter The price of the Product : ";
+			cin >> price;
+			Products << price << "\n";
+			cin.ignore();
+			cout << "Enter the description of the Product : ";
+			getline(cin, input);
+			Products << input << "\n";
+		}
+	}
+};
+class Remove :public Manage {
+public:
+	int Deleting_items(fstream& Products, fstream& temp, string& input)
+	{
+		string compare;
+		int skip = 0, price=0;
+			cout << "Enter the name of the product you want to remove from items list\n";
+			cin.ignore();
+			getline(cin, compare);
+			while (getline(Products, input))
+			{
+				skip--;
+				
+				 if (skip > 0)
+				{
+					if (skip == 2)
+					{
+					price = stoi(input);
+					}
+					continue;
+				}
+				if (input != compare)
+				{
 
-# Fortran module files
-*.mod
-*.smod
+					temp << input << "\n";
+				}
+				else
+				{
+					skip = 3;
+				}
+			}
+			return price;
+	}
+};
+class edit :public Manage {
+public:
+	void Edit_items(fstream& Products, fstream& temp, string& input)
+	{
+		string compare,Name;
+		
+		int skip = 0, check = 0,price=0;
+		cout << "Enter the name of the product you want to Edit from items list\n";
+		cin.ignore();
+		getline(cin, compare);
+		while (getline(Products, input))
+		{
+			
+			skip--;
+			if (skip > 0)
+			{
+				if (skip == 2)
+				{
+					cout << "Press 1 to Edit the Price of Product\nPress 2 to Skip to the Discription\n";
+					cin >> check;
+					if (check == 1)
+					{
+						cout << "Enter the NEW PRICE of the Product : ";
+						cin >> price;
+						temp << price << "\n";
+					}
+					else {
+						temp << input << "\n";
+					}
+				}
+				if (skip == 1)
+				{
+					cout << "Press 1 to Edit the Description of Product\nPress 2 to Move back to the Menu\n";
+					cin >> check;
+					if (check == 1)
+					{
+						cout << "Enter the NEW DESCRIPTION OF PRODUCT\n";
+						cin.ignore();
+						getline(cin, Name);
+						temp << Name << "\n";
+					}
+					else
+					{
+						temp << input << "\n";
+					}
+				}
+				continue;
+			}
+			if (input != compare)
+			{
+				temp << input << "\n";
+			}
+			else
+			{
+				cout << "Item Located\n";
+				cout << "Press 1 to Edit the name of Product\nPress 2 to Skip to the price\n";
+				cin >> check;
+				if (check == 1)
+				{
+					cout << "Enter the NEW NAME of this Product : ";
+					cin.ignore();
+					getline(cin, Name);
+					temp << Name << "\n";
+				}
+				else
+				{
+					temp << input << "\n";
+				}
+				skip = 3;
+			}
+		}
+	}
+};
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+class Billing: public Manage
+{
+public:
+	int Total_Bill(fstream& Products, fstream& Bill, string& input)
+	{
+		int skip = 0; int bill = 0;
+		string compare;
+		
+			cin.ignore();
+			cout << "Enter the name of Product " << " : ";
+			getline(cin, compare);
+			while (getline(Products, input))
+			{
 
-# Executables
-*.exe
-*.out
-*.app
+
+				skip--;
+			
+				if (compare == input)
+				{
+
+					Bill << input << "\n";
+					skip = -2;
+				}
+				else if (skip < 0)
+				{
+					skip += 2;
+						if (skip == -1)
+						{
+							Bill << input<<"\n";
+							bill = stoi(input);
+						}
+						if (skip == 0)
+						{
+							Bill << input << "\n";
+						}
+				}
+				else
+				{
+					skip = 2;
+					continue;
+				}
+
+		}
+		return bill;
+	}
+	void Display(fstream& Products, string& input)
+	{
+		int loop = 1;
+
+		while (getline(Products, input))
+		{
+			if (loop == 1)
+			{
+				cout << "The Name of the Product is : " << input << "\n";
+				loop++;
+			}
+			else if (loop == 2)
+			{
+				cout << "Price of the Product is : " << input << "\n";
+				loop++;
+			}
+			else
+			{
+				cout << "Description of the Product is : " << input << "\n";
+				loop = 1;
+			}
+		}
+	}
+	void reciept(fstream& Bill, string& input)
+	{
+		int loop = 1;
+
+		while (getline(Bill, input))
+		{
+			if (loop == 1)
+			{
+				cout << "The Name of the Product is : " << input << "\n";
+				loop++;
+			}
+			else if (loop == 2)
+			{
+				cout << "Price of the Product is : " << input << "\n";
+				loop++;
+			}
+			else
+			{
+				cout << "Description of the Product is : " << input << "\n";
+				loop = 1;
+			}
+		}
+
+	}
+};
+
+int main()
+{
+	string input;
+	fstream items,temp, Bill;
+	Manage* store;
+	int Number=0,choice,choice_loop=0,total_bill=0;
+	items.open("items.txt", ios::app | ios::out | ios::in);
+	temp.open("tempo.txt", ios::app | ios::out | ios::in);
+	Bill.open("Bill.txt", ios::out);
+	Bill.close();
+	items.close();
+	temp.close();
+	while (choice_loop != 1)
+	{
+		cout << "\nPress 0 to exit from Program\nPress 1 to Add items in store list \nPress 2 to Remove items From the Store list\nPress 3 to Edit items in the Store list\nPress 4 to View Details of all the items and Purchase Items and Proceed to Final Bill\n";
+		cin >> choice;
+		switch (choice)
+		{
+		case 0:
+			choice_loop = 1;
+			break;
+		case 1:
+			items.open("items.txt", ios::app | ios::out | ios::in);
+			cout << "Enter the number of items you want to add\n";
+			cin >> Number;
+			store = new add;
+			store->Adding_items(items, Number, input);
+			items.close();
+			break;
+		case 2:
+			items.open("items.txt", ios::app | ios::out | ios::in);
+			temp.open("tempo.txt",  ios::out );
+			store = new Remove;
+			store->Deleting_items(items, temp, input);
+			items.close();
+			temp.close();
+			remove("items.txt");
+			rename("tempo.txt", "items.txt");
+			break;
+		case 3:
+			items.open("items.txt", ios::app | ios::out | ios::in);
+			temp.open("tempo.txt", ios::out);
+			store = new edit;
+			store->Edit_items(items, temp, input);
+			items.close();
+			temp.close();
+			remove("items.txt");
+			rename("tempo.txt", "items.txt");
+			break;
+		case 4:
+			
+			Bill.open("Bill.txt", ios::out );
+			items.open("items.txt", ios::in);
+			store = new Billing;
+			store->Display(items, input);
+			items.close();
+			cout << "Enter the number of Products you want to Add : ";
+			cin >> Number;
+			for (int i = 0; i < Number; i++)
+			{
+				items.open("items.txt", ios::in);
+				total_bill+= store->Total_Bill(items, Bill, input);
+				items.close();
+			}
+			Bill.close();
+			Bill.open("Bill.txt", ios::in);
+			cout << "\nFOLLOWING ARE THE ITEMS YOU PURCHASED\n";
+			store->reciept(Bill, input);
+			cout << "TOTAL BILL OF THE ITEMS PURCHASED : "<<total_bill<<"\n";
+			Bill.close();
+			while (choice != 0)
+			{
+				cout << "Press 0 to proceed to payment\nPress 1 to Add more Items to your Bucket\nPress 2 to Delete an item from your Bucket\n";
+				cin >> choice;
+				if (choice == 1)
+				{
+					Bill.open("Bill.txt", ios::app);
+					cout << "Enter the number of Products you want to Add : ";
+					cin >> Number;
+					for (int i = 0; i < Number; i++)
+					{
+						items.open("items.txt", ios::in);
+						total_bill += store->Total_Bill(items, Bill, input);
+						items.close();
+					}
+					Bill.close();
+					Bill.open("Bill.txt", ios::in);
+					cout << "\nFOLLOWING ARE THE ITEMS YOU PURCHASED\n";
+					store->reciept(Bill, input);
+					cout << "Your revisited Bill : " << total_bill << "\n";
+					Bill.close();
+				}
+				else if (choice == 2)
+				{
+					Bill.open("Bill.txt", ios::app | ios::out | ios::in);
+					temp.open("tempo.txt", ios::out);
+					store = new Remove;
+					total_bill -= store->Deleting_items(Bill, temp, input);
+					Bill.close();
+					temp.close();
+					remove("Bill.txt");
+					rename("tempo.txt", "Bill.txt");
+					Bill.open("Bill.txt", ios::in);
+					cout << "\nFOLLOWING ARE THE ITEMS YOU PURCHASED\n";
+					store = new Billing;
+					store->reciept(Bill, input);
+					cout << "Your revisited Bill : " << total_bill << "\n";
+					Bill.close();
+									}
+				else
+				{
+					cout<<"Your Final Bill = "<<total_bill<<" \nThank You for Shopping here\n";
+					choice = 0;
+				}
+				total_bill = 0;
+				break;
+			}
+		}
+	}
+}
+
+// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
+// Debug program: F5 or Debug > Start Debugging menu
+
+// Tips for Getting Started: 
+//   1. Use the Solution Explorer window to add/manage files
+//   2. Use the Team Explorer window to connect to source control
+//   3. Use the Output window to see build output and other messages
+//   4. Use the Error List window to view errors
+//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
+//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
